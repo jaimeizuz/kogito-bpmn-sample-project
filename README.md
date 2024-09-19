@@ -4,8 +4,7 @@
 
 Given a BPMN diagram that includes link events, it's been noticed that the "Name" field is always stored as "null" in the Kogito database (both data-index and data-audit tables).
 
-![Alt text](./SampleProcess-svg.svg)
-<img src="./SampleProcess-svg.svg">
+![Alt text](./src/main/resources/SampleProcess-svg.svg)
 
 ### Prerequisites
 * git
