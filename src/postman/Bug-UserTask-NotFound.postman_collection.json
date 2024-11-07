@@ -1,0 +1,301 @@
+{
+	"info": {
+		"_postman_id": "1211e7cb-d53c-46e6-8ae3-99c9f62f1e60",
+		"name": "Bug-UserTask-NotFound",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28218587"
+	},
+	"item": [
+		{
+			"name": "1. New Process Instance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"process-instance-id\", JSON.parse(pm.response.text())[\"id\"]);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{kogito-service-host}}:{{kogito-service-port}}/{{kogito-service-process-id}}",
+					"host": [
+						"{{kogito-service-host}}"
+					],
+					"port": "{{kogito-service-port}}",
+					"path": [
+						"{{kogito-service-process-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. List User Tasks by Process Instance Id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var tempQuery = pm.collectionVariables.get(\"query-get-user-tasks-by-process-instance-id\");\r",
+							"tempQuery = encodeURIComponent(tempQuery.replace(\"process-instance-id\",pm.collectionVariables.get(\"process-instance-id\")));\r",
+							"console.log(tempQuery);\r",
+							"pm.request.url.query.insert({key:\"query\",value: tempQuery});\r",
+							"\r",
+							"/*\r",
+							"query=%7BUserTaskInstances(where%3A%7BprocessInstanceId%3A%7Bequal%3A%22d00e3fb7-d072-44fb-b3d4-4b2611d0b687%22%7D%7D%2CorderBy%3A%7BlastUpdate%3ADESC%7D)%7Bid%2Cname%2Cstate%2CactualOwner%2Cdescription%2ClastUpdate%2Cpriority%2CprocessId%2CprocessInstanceId%2Cendpoint%2Cinputs%2Coutputs%7D%7D\r",
+							"*/"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var dataNode = JSON.parse(pm.response.text())[\"data\"];\r",
+							"var userTaskInstancesNode = dataNode[\"UserTaskInstances\"];\r",
+							"var firstUserTaskId = userTaskInstancesNode[0][\"id\"];\r",
+							"var firstUserTaskName = userTaskInstancesNode[0][\"name\"];\r",
+							"\r",
+							"pm.collectionVariables.set(\"task-instance-id\", firstUserTaskId);\r",
+							"pm.collectionVariables.set(\"task-instance-name\", firstUserTaskName);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{kogito-data-index-host}}:{{kogito-data-index-port}}/graphql",
+					"host": [
+						"{{kogito-data-index-host}}"
+					],
+					"port": "{{kogito-data-index-port}}",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Complete User Task",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"validData\" : false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{kogito-service-host}}:{{kogito-service-port}}/{{kogito-service-process-id}}/{{process-instance-id}}/{{task-instance-name}}/{{task-instance-id}}?phase=complete&user={{user-id}}",
+					"host": [
+						"{{kogito-service-host}}"
+					],
+					"port": "{{kogito-service-port}}",
+					"path": [
+						"{{kogito-service-process-id}}",
+						"{{process-instance-id}}",
+						"{{task-instance-name}}",
+						"{{task-instance-id}}"
+					],
+					"query": [
+						{
+							"key": "phase",
+							"value": "complete"
+						},
+						{
+							"key": "user",
+							"value": "{{user-id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "kogito-service-host",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "kogito-service-port",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "kogito-service-process-id",
+			"value": "SampleProcess",
+			"type": "string"
+		},
+		{
+			"key": "kogito-data-index-host",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "kogito-data-index-port",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "process-instance-id",
+			"value": "209fe80f-f9fe-483d-8ae8-9d9e553314a4",
+			"type": "string"
+		},
+		{
+			"key": "task-instance-id",
+			"value": "836bfe21-0a0f-44de-88db-afdc17f4b5d5",
+			"type": "string"
+		},
+		{
+			"key": "task-instance-name",
+			"value": "validateData",
+			"type": "string"
+		},
+		{
+			"key": "user-id",
+			"value": "jdoe",
+			"type": "string"
+		},
+		{
+			"key": "query-get-all-process-instances",
+			"value": "{ProcessInstances{id,processId,processName,state,parentProcessInstanceId,rootProcessId,rootProcessInstanceId,nodes{id,name,type}}}",
+			"type": "string"
+		},
+		{
+			"key": "query-get-process-instance-by-process-id",
+			"value": "{ProcessInstances(where:{processId:{equal:\"kogito-service-process-id\"}},orderBy:{start:ASC}){id,processId,processName,start,end,state}}",
+			"type": "string"
+		},
+		{
+			"key": "query-get-process-instance-by-instance-id",
+			"value": "{ProcessInstances(where:{id:{equal:\"process-instance-id\"}},orderBy:{start:ASC}){id,processId,processName,start,end,state}}",
+			"type": "string"
+		},
+		{
+			"key": "query-get-user-tasks-by-process-id",
+			"value": "{UserTaskInstances(where:{processId:{equal:\"kogito-service-process-id\"}}){id,name,state,actualOwner,potentialUsers,description,priority,processId,processInstanceId,inputs,outputs}}",
+			"type": "string"
+		},
+		{
+			"key": "query-get-user-tasks-by-process-instance-id",
+			"value": "{UserTaskInstances(where:{processInstanceId:{equal:\"process-instance-id\"}},orderBy:{lastUpdate:DESC}){id,name,state,actualOwner,potentialUsers,description,lastUpdate,priority,processId,processInstanceId,endpoint,inputs,outputs}}",
+			"type": "string"
+		},
+		{
+			"key": "query-get-active-user-tasks-by-process-instance-id",
+			"value": "{UserTaskInstances(where:{processInstanceId:{equal:\"process-instance-id\"},{state:{equal:\"ACTIVE\"}}}){id,name,state,actualOwner,potentialUsers,description,priority,processId,processInstanceId,inputs,outputs}}",
+			"type": "string"
+		},
+		{
+			"key": "query-describe-entity",
+			"value": "{__type(where: {name:\"entity\"}){namefields{nametype{namekind}}}}",
+			"type": "string"
+		},
+		{
+			"key": "query-describe-schema",
+			"value": "{schema{types{name}}}",
+			"type": "string"
+		},
+		{
+			"key": "query-get-process-instances-by-process-id-and-date",
+			"value": "{ProcessInstances(where:{and:{processId:{equal:\"kogito-service-process-id\"},start :{greaterThan: \"2024-10-02T17:00\"},state:{equal:ACTIVE}}},orderBy:{start:ASC}){id,processId,processName,start,end,state}}",
+			"type": "string"
+		}
+	]
+}
