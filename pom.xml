@@ -13,17 +13,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
+    <maven.enforcer.plugin.version>3.5.0</maven.enforcer.plugin.version>
     <quarkus-plugin.version>3.8.6</quarkus-plugin.version>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>3.8.6</quarkus.platform.version>
-    <kogito.bom.group-id>org.kie.kogito</kogito.bom.group-id>
-    <kogito.bom.artifact-id>kogito-bom</kogito.bom.artifact-id>
-    <kogito.bom.version>999-SNAPSHOT</kogito.bom.version>
-    <kogito-apps.bom.artifact-id>kogito-apps-bom</kogito-apps.bom.artifact-id>
-    <version.org.kie.kogito>999-SNAPSHOT</version.org.kie.kogito>
     <micrometer.version>3.2.4</micrometer.version>
+    <bamoe.build>bamoe-community</bamoe.build>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -33,23 +31,17 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>${kogito.bom.group-id}</groupId>
-        <artifactId>${kogito.bom.artifact-id}</artifactId>
-        <version>${kogito.bom.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>${kogito.bom.group-id}</groupId>
-        <artifactId>${kogito-apps.bom.artifact-id}</artifactId>
-        <version>${version.org.kie.kogito}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
+    <!-- Application-specific dependencies -->
+    <dependency>
+      <groupId>es.santander.scib.funds</groupId>
+      <artifactId>santander-scib-funds-oboarding-processes-servicetasks</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+
     <!-- jBPM and Drools -->
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -63,51 +55,11 @@
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
-      <artifactId>kogito-addons-quarkus-jobs-management</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
       <artifactId>kie-addons-quarkus-process-svg</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-addons-quarkus-source-files</artifactId>
-    </dependency>
-
-    <!-- Persistence -->
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-addons-quarkus-persistence-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-agroal</artifactId>
-    </dependency>
-
-    <!-- Data Index Addon -->
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kogito-addons-quarkus-data-index-postgresql</artifactId>
-    </dependency>
-
-    <!-- Jobs Service -->
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kogito-addons-quarkus-jobs</artifactId>
-    </dependency>
-
-    <!-- Data Audit -->
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kogito-addons-quarkus-data-audit-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kogito-addons-quarkus-data-audit</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -154,9 +106,220 @@
 
   <profiles>
     <profile>
-      <id>events</id>
+      <id>bamoe-enterprise</id>
+      <activation>
+        <property>
+          <name>bamoe.build</name>
+          <value>bamoe-enterprise</value>
+        </property>
+      </activation>
+
+      <repositories>
+        <repository>
+          <id>ibm-bamoe-enterprise-maven-repository</id>
+          <url>http://localhost:8800</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>ibm-bamoe-enterprise-maven-repository</id>
+          <url>http://localhost:8800</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+
       <properties>
-        <quarkus.profile>events</quarkus.profile>
+        <bamoe.version>9.1.1-ibm-0003</bamoe.version>
+        <bamoe.bom.group-id>com.ibm.bamoe</bamoe.bom.group-id>
+        <bamoe.bom.artifact-id>bamoe-bom</bamoe.bom.artifact-id>
+        <bamoe.bom.version>9.1.1-ibm-0003</bamoe.bom.version>
+        <version.org.jbpm.quarkus.devui>9.1.1-ibm-0003</version.org.jbpm.quarkus.devui>
+      </properties>
+
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>${bamoe.bom.group-id}</groupId>
+            <artifactId>${bamoe.bom.artifact-id}</artifactId>
+            <version>${bamoe.bom.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+
+          <dependency>
+            <groupId>${bamoe.bom.group-id}</groupId>
+            <artifactId>bamoe-techpreview-bom</artifactId>
+            <version>${bamoe.bom.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+
+    <profile>
+      <id>bamoe-community</id>
+      <activation>
+        <property>
+          <name>bamoe.build</name>
+          <value>bamoe-community</value>
+        </property>
+      </activation>
+
+      <repositories>
+        <repository>
+          <id>apache-public-repository-group</id>
+          <name>Apache Public Repository Group</name>
+          <url>https://repository.apache.org/content/groups/public/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>apache-public-repository-group</id>
+          <name>Apache Public Repository Group</name>
+          <url>https://repository.apache.org/content/groups/public/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+
+      <properties>
+        <kogito.bom.group-id>org.kie.kogito</kogito.bom.group-id>
+        <kogito.bom.artifact-id>kogito-bom</kogito.bom.artifact-id>
+        <kogito.bom.version>999-20240912-SNAPSHOT</kogito.bom.version>
+        <kogito-apps.bom.artifact-id>kogito-apps-bom</kogito-apps.bom.artifact-id>
+        <version.org.kie.kogito>999-20240912-SNAPSHOT</version.org.kie.kogito>
+        <version.org.jbpm.quarkus.devui>999-SNAPSHOT</version.org.jbpm.quarkus.devui>
+      </properties>
+
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>${kogito.bom.group-id}</groupId>
+            <artifactId>${kogito.bom.artifact-id}</artifactId>
+            <version>${kogito.bom.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+          <dependency>
+            <groupId>${kogito.bom.group-id}</groupId>
+            <artifactId>${kogito-apps.bom.artifact-id}</artifactId>
+            <version>${version.org.kie.kogito}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+
+    <profile>
+      <id>development</id>
+      <properties>
+        <quarkus.profile>dev</quarkus.profile>
+        <quarkus.embedded.postgresql.version>0.2.3</quarkus.embedded.postgresql.version>
+        <quarkus.wiremock.version>1.3.3</quarkus.wiremock.version>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.jbpm</groupId>
+          <artifactId>jbpm-quarkus-devui</artifactId>
+          <version>${version.org.jbpm.quarkus.devui}</version>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkiverse.embedded.postgresql</groupId>
+          <artifactId>quarkus-embedded-postgresql</artifactId>
+          <version>${quarkus.embedded.postgresql.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>bamoe-persistence</id>
+      <properties>
+        <quarkus.profile>bamoe-persistence</quarkus.profile>
+      </properties>
+      <dependencies>
+        <!-- Persistence -->
+        <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-addons-quarkus-persistence-jdbc</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-jdbc-postgresql</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-agroal</artifactId>
+        </dependency>
+
+        <!-- Data Index Addon -->
+        <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>kogito-addons-quarkus-data-index-postgresql</artifactId>
+        </dependency>
+        <!-- Data Audit -->
+        <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>kogito-addons-quarkus-data-audit-jpa</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>kogito-addons-quarkus-data-audit</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>bamoe-jobs</id>
+      <properties>
+        <quarkus.profile>bamoe-jobs</quarkus.profile>
+      </properties>
+      <dependencies>
+        <!-- Jobs Service -->
+        <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>kogito-addons-quarkus-jobs</artifactId>
+        </dependency>
+        <!-- Jobs Management endpoints -->
+        <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>kogito-addons-quarkus-jobs-management</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>bamoe-kafka-events</id>
+      <properties>
+        <quarkus.profile>bamoe-kafka-events</quarkus.profile>
       </properties>
       <dependencies>
         <!-- Messaging -->
@@ -177,27 +340,49 @@
     </profile>
 
     <profile>
-      <id>observability</id>
+      <id>bamoe-elk-process-monitoring</id>
       <properties>
-        <quarkus.profile>observability</quarkus.profile>
+        <quarkus.profile>bamoe-elk-process-monitoring</quarkus.profile>
       </properties>
       <dependencies>
-        <!-- ELK Logging -->
+        <!-- Process Monitoring - ELK -->
+        <dependency>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-addons-quarkus-monitoring-elastic</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>opentelemetry-traces-logs-metrics</id>
+      <properties>
+        <quarkus.profile>opentelemetry-traces-logs-metrics</quarkus.profile>
+      </properties>
+      <dependencies>
+        <!-- Logs (ELK) -->
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-logging-gelf</artifactId>
         </dependency>
 
-        <!-- Observability -->
+        <!-- Metrics -->
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-micrometer</artifactId>
         </dependency>
         <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <!--
+        <dependency>
           <groupId>io.quarkiverse.micrometer.registry</groupId>
           <artifactId>quarkus-micrometer-registry-otlp</artifactId>
           <version>${micrometer.version}</version>
         </dependency>
+        -->
+
+        <!-- Traces -->
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-opentelemetry</artifactId>
@@ -214,34 +399,6 @@
     </profile>
 
     <profile>
-      <id>elk-monitoring</id>
-      <properties>
-        <quarkus.profile>elk-monitoring</quarkus.profile>
-      </properties>
-      <dependencies>
-        <!-- Monitoring - ELK -->
-        <dependency>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-addons-quarkus-monitoring-elastic</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-
-    <profile>
-      <id>prometheus-monitoring</id>
-      <properties>
-        <quarkus.profile>prometheus-monitoring</quarkus.profile>
-      </properties>
-      <dependencies>
-        <!-- Monitoring - Prometheus -->
-        <dependency>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-addons-quarkus-monitoring-prometheus</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-
-    <profile>
       <id>container</id>
       <properties>
         <quarkus.profile>container</quarkus.profile>
@@ -250,40 +407,6 @@
         <dependency>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-container-image-jib</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-
-    <profile>
-      <id>development</id>
-      <properties>
-        <quarkus.profile>dev</quarkus.profile>
-      </properties>
-      <dependencyManagement>
-        <dependencies>
-          <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-quarkus-devui-bom</artifactId>
-            <version>${kogito.bom.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-          </dependency>
-        </dependencies>
-      </dependencyManagement>
-      <dependencies>
-        <dependency>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-quarkus-devui</artifactId>
-          <version>${kogito.bom.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.kie</groupId>
-          <artifactId>kogito-addons-quarkus-jobs-service-embedded</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkiverse.embedded.postgresql</groupId>
-          <artifactId>quarkus-embedded-postgresql</artifactId>
-          <version>0.2.1</version>
         </dependency>
       </dependencies>
     </profile>
